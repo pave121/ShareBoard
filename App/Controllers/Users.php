@@ -12,6 +12,12 @@
         
         -private verifyLoginData() -> sanitize and checks login form data, returns it to register() method
         
+        -public createUserSession($user) -> creates session when login data is verified
+        
+        -public logout() ->unsets the session
+        
+        -public isLoggedIn() -> returns true if session exists, false otherwise 
+        
         uses helper functions from Helpers
 
 */
@@ -71,7 +77,12 @@ class Users extends Controller{
             
              if(empty($data['email_err']) && empty($data['password_err'])){
             
-            die ("SUCCESS");
+                $loggedInUser = $this->userModel->login($data['email']);
+                 
+                // create session
+                $this->createUserSession($loggedInUser);
+                 
+                 
         }
         else{
             $this->view('users/login', $data);
@@ -168,6 +179,38 @@ class Users extends Controller{
         }
             
         return $data;
+    }
+    
+    public function createUserSession($user){
+        
+        $_SESSION['user_id'] = $user->id;
+        $_SESSION['user_email'] = $user->email;
+        $_SESSION['user_name'] = $user->name;
+        
+        redirect('Pages/index');
+        
+    }
+    
+    public function logout(){
+        
+        unset ($_SESSION['user_id']);
+        unset ($_SESSION['user_email']);
+        unset ($_SESSION['user_name']);
+        
+        session_destroy();
+        
+        redirect('Users/login');
+        
+    }
+    
+    public function isLoggedIn(){
+        
+        if(isset($_SESSION['user_id'])){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
     
 }

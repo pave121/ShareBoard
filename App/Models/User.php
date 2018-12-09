@@ -29,4 +29,14 @@ class User {
 
         return (!empty($row)) ? $row : false;
     }
+    
+    public function login($email){
+        
+        $this->db->query('SELECT * FROM users WHERE email = :email');
+        $this->db->bind(':email', $email);
+        
+        $row = $this->db->single();
+        
+        return $row;
+    }
 }
