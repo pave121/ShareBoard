@@ -1,5 +1,21 @@
 <?php
 
+/*
+    Methods:
+        - public construct
+        
+        -public register() -> sends data to model User->register
+        
+        -public login() -> asks model to check, and does the login
+        
+        -private verifyRegisterData() -> sanitize and checks register form data, returns it to register() method
+        
+        -private verifyLoginData() -> sanitize and checks login form data, returns it to register() method
+        
+        uses helper functions from Helpers
+
+*/
+
 class Users extends Controller{
     
     public function __construct(){
@@ -15,7 +31,17 @@ class Users extends Controller{
             
         if(empty($data['name_err']) && empty($data['email_err']) && empty($data['password_err']) && empty($data['confirm_password_err'])){
             
-            die ("SUCCESS");
+            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        
+            if($this->userModel->register($data)){
+                
+                flash('register_success', 'You are now registered');
+                redirect('Users/login');
+            }
+            else{
+                
+                die ("Something went wrong");
+            }
         }
         else{
             $this->view('users/register', $data);
@@ -133,15 +159,15 @@ class Users extends Controller{
             }
         
         if($user = $this->userModel->findUserByEmail($data['email'])){
-            if($data['password'] == $user->password){
-                echo "Success";
+            if(!password_verify($data['password'], $user->password)){
+                $data['password_err'] = 'This user / password combination does not exist';
             }
         }
+        else{
+            $data['email_err'] = 'User with this email does not exist';
+        }
             
-        
-        
         return $data;
     }
-    
     
 }
