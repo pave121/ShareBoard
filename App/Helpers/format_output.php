@@ -1,10 +1,8 @@
 <?php 
 
-function formatDate($data = []){
-    
-    foreach ($data['posts'] as $post){
+function formatDate($date){
         
-        $date_time = strtotime($post->postCreated);
+        $date_time = strtotime($date);
         
         switch (date('l', $date_time)){
             case 'Monday':
@@ -31,8 +29,7 @@ function formatDate($data = []){
                 
         }
         
-        $post->postCreated = $day .', ' . date('d.m.Y. H:i', $date_time);
+        $date = $day .', ' . date('d.m.Y. H:i', $date_time);
         
-    }
-        return $data;
+        return $date;
 }
